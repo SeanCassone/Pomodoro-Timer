@@ -1,10 +1,30 @@
 import React, { useState } from "react";
 import classNames from "../utils/class-names";
+import { minutesToDuration } from "../utils/duration";
 import useInterval from "../utils/useInterval";
 
 function Pomodoro() {
   // Timer starts out paused
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+
+  const [focusTime, setFocusTime] = useState(25);
+  const [breakTime, setBreakTime] = useState(5);
+
+  function increaseFocusTime() {
+    setFocusTime((focusTime) => (focusTime < 60 ? focusTime + 5 : null));
+  }
+
+  function decreaseFocusTime() {
+    setFocusTime((focusTime) => (focusTime > 5 ? focusTime - 5 : null));
+  }
+
+  function increaseBreakTime() {
+    setBreakTime((breakTime) => (breakTime < 15 ? breakTime + 1 : null));
+  }
+
+  function decreaseBreakTime() {
+    setBreakTime((breakTime) => (breakTime > 1 ? breakTime - 1 : null));
+  }
 
   useInterval(
     () => {
@@ -24,7 +44,7 @@ function Pomodoro() {
           <div className="input-group input-group-lg mb-2">
             <span className="input-group-text" data-testid="duration-focus">
               {/* TODO: Update this text to display the current focus session duration */}
-              Focus Duration: 25:00
+              Focus Duration: {minutesToDuration(focusTime)}
             </span>
             <div className="input-group-append">
               {/* TODO: Implement decreasing focus duration and disable during a focus or break session */}
@@ -32,6 +52,7 @@ function Pomodoro() {
                 type="button"
                 className="btn btn-secondary"
                 data-testid="decrease-focus"
+                onClick={decreaseFocusTime}
               >
                 <span className="oi oi-minus" />
               </button>
@@ -40,6 +61,7 @@ function Pomodoro() {
                 type="button"
                 className="btn btn-secondary"
                 data-testid="increase-focus"
+                onClick={increaseFocusTime}
               >
                 <span className="oi oi-plus" />
               </button>
@@ -51,7 +73,7 @@ function Pomodoro() {
             <div className="input-group input-group-lg mb-2">
               <span className="input-group-text" data-testid="duration-break">
                 {/* TODO: Update this text to display the current break session duration */}
-                Break Duration: 05:00
+                Break Duration: {minutesToDuration(breakTime)}
               </span>
               <div className="input-group-append">
                 {/* TODO: Implement decreasing break duration and disable during a focus or break session*/}
@@ -59,6 +81,7 @@ function Pomodoro() {
                   type="button"
                   className="btn btn-secondary"
                   data-testid="decrease-break"
+                  onClick={decreaseBreakTime}
                 >
                   <span className="oi oi-minus" />
                 </button>
@@ -67,6 +90,7 @@ function Pomodoro() {
                   type="button"
                   className="btn btn-secondary"
                   data-testid="increase-break"
+                  onClick={increaseBreakTime}
                 >
                   <span className="oi oi-plus" />
                 </button>
