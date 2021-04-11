@@ -32,7 +32,7 @@ function Pomodoro() {
   useInterval(
     () => {
       // console.log(timeRemaining);
-      if (isTimerRunning && timerState === "focus") {
+      if (timerState === "focus") {
         setTimeRemaining((focusTime) => focusTime - 1);
         if (timeRemaining <= 1) {
           setTimerState("break");
@@ -41,8 +41,8 @@ function Pomodoro() {
       }
       if (timerState === "break") {
         setTimeRemaining((breakTime) => breakTime - 1);
-        if (timeRemaining <= 1) {
-          setTimerState("stop");
+        if (timeRemaining === 1) {
+          setTimerState("focus");
           setTimeRemaining(focusTime);
         }
       }
@@ -53,7 +53,6 @@ function Pomodoro() {
   function playPause() {
     setIsTimerRunning((prevState) => !prevState);
     setTimerState((prevState) => (prevState === "stop" ? "focus" : prevState));
-    setTimeRemaining(focusTime);
   }
 
   function stop() {
@@ -142,7 +141,6 @@ function Pomodoro() {
               data-testid="play-pause"
               title="Start or pause timer"
               onClick={playPause}
-              onChange={useInterval}
             >
               <span
                 className={classNames({
