@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import classNames from "../utils/class-names";
 import useInterval from "../utils/useInterval";
-import duration, {
-  minutesToDuration,
-  secondsToDuration,
-} from "../utils/duration";
+import { minutesToDuration, secondsToDuration } from "../utils/duration";
 
 function Pomodoro() {
   // Timer starts out paused
@@ -63,6 +60,11 @@ function Pomodoro() {
     setTimerState((state) => (state === "stop" ? "focus" : state));
   }
 
+  function stop() {
+    setIsTimerRunning(false);
+    setTimerState("stop");
+    setTimeRemaining(0);
+  }
   return (
     <div className="pomodoro">
       <div className="row">
@@ -156,6 +158,7 @@ function Pomodoro() {
               type="button"
               className="btn btn-secondary"
               title="Stop the session"
+              onClick={stop}
               disabled={!isTimerRunning}
             >
               <span className="oi oi-media-stop" />
