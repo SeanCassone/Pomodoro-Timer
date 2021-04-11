@@ -6,13 +6,12 @@ import { minutesToDuration, secondsToDuration } from "../utils/duration";
 function Pomodoro() {
   // Timer starts out paused
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  // this holds the time for focus and break
+
   const [focusTime, setFocusTime] = useState(1500);
   const [breakTime, setBreakTime] = useState(300);
+
   const [timerState, setTimerState] = useState("stop");
-  const [focusTimer, setFocusTimer] = useState(1500);
-  const [breakTimer, setBreakTimer] = useState(300);
-  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(1500);
 
   // // Focus Duration time display and increase decrease buttons
   const increaseFocusTime = () => setFocusTime(focusTime + 300);
@@ -22,32 +21,28 @@ function Pomodoro() {
   const increaseBreakTime = () => setBreakTime(breakTime + 60);
   const decreaseBreakTime = () => setBreakTime(breakTime - 60);
 
+  const displaySessionTitle = () =>
+    timerState === "focus"
+      ? `Focusing for ${secondsToDuration(focusTime)} minutes`
+      : `On Break for ${secondsToDuration(breakTime)} minutes`;
+
   const displayFocusTimer = () =>
     focusTime === 3600 ? "60:00" : secondsToDuration(focusTime);
 
-  const displaySessionTitle = () =>
-    timerState === "focus"
-      ? `Focusing for ${secondsToDuration(focusTimer)} minutes`
-      : `On Break for ${secondsToDuration(breakTimer)} minutes`;
-
-  const displayRemainingTime = () =>
-    timerState === "focus"
-      ? `${secondsToDuration(focusTimer)} remaining`
-      : `${secondsToDuration(breakTimer)} remaining`;
   useInterval(
     () => {
-      setIsTimerRunning(true);
-      if (isTimerRunning) {
+      // console.log(timeRemaining);
+      if (isTimerRunning && timerState === "focus") {
         setTimeRemaining((focusTime) => focusTime - 1);
         if (timeRemaining <= 1) {
-          setTimerState(false);
+          setTimerState("break");
           setTimeRemaining(breakTime);
         }
       }
-      if (!timerState) {
+      if (timerState === "break") {
         setTimeRemaining((breakTime) => breakTime - 1);
         if (timeRemaining <= 1) {
-          setTimerState(true);
+          setTimerState("stop");
           setTimeRemaining(focusTime);
         }
       }
@@ -57,14 +52,17 @@ function Pomodoro() {
 
   function playPause() {
     setIsTimerRunning((prevState) => !prevState);
-    setTimerState((state) => (state === "stop" ? "focus" : state));
+    setTimerState((prevState) => (prevState === "stop" ? "focus" : prevState));
+    setTimeRemaining(focusTime);
   }
 
   function stop() {
     setIsTimerRunning(false);
     setTimerState("stop");
-    setTimeRemaining(0);
+    setFocusTime(1500);
+    setBreakTime(300);
   }
+
   return (
     <div className="pomodoro">
       <div className="row">
@@ -72,7 +70,7 @@ function Pomodoro() {
           <div className="input-group input-group-lg mb-2">
             <span className="input-group-text" data-testid="duration-focus">
               {/* TODO: Update this text to display the current focus session duration */}
-              Focus Duration: {secondsToDuration(focusTime)}
+              Focus Duration: {displayFocusTimer()}
             </span>
             <div className="input-group-append">
               {/* TODO: Implement decreasing focus duration and disable during a focus or break session */}
@@ -91,7 +89,7 @@ function Pomodoro() {
                 className="btn btn-secondary"
                 data-testid="increase-focus"
                 onClick={increaseFocusTime}
-                disabled={isTimerRunning}
+                disabled={isTimerRunning || focusTime >= 3600}
               >
                 <span className="oi oi-plus" />
               </button>
@@ -144,6 +142,7 @@ function Pomodoro() {
               data-testid="play-pause"
               title="Start or pause timer"
               onClick={playPause}
+              onChange={useInterval}
             >
               <span
                 className={classNames({
@@ -174,7 +173,7 @@ function Pomodoro() {
             <h2 data-testid="session-title">{displaySessionTitle()}</h2>
             {/* TODO: Update message below to include time remaining in the current session */}
             <p className="lead" data-testid="session-sub-title">
-              {displayRemainingTime()}
+              {secondsToDuration(timeRemaining)} remaining
             </p>
           </div>
         </div>
