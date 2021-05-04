@@ -3,6 +3,7 @@
 ## Context
 This application is a time-management application based on a method developed by Francesco Cirillo in the late 1980s. The technique uses a timer to break down work into intervals, traditionally 25 minutes in length, separated by short breaks.
  
+  ![screenshot](/pomodoroTimer.png)
 > [Live Demo](https://project-pomodoro-timer-qualified-1-six.vercel.app/)
 
 ## User 
